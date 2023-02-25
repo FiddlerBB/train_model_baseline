@@ -3,14 +3,13 @@ import cv2
 import tensorflow as tf
 
 AUGMENTATION_TRAIN = A.Compose([
-    A.HorizontalFlip(),
-    A.Rotate(limit=25),
-    A.ChannelShuffle(),
-    A.PadIfNeeded(min_height=128, min_width=128, p=1),
-    A.CenterCrop(224, 224, p=0.5),
-    # A.RandomCrop(width=224, height=224, p=0.5),
-    A.ShiftScaleRotate(shift_limit=0.2, scale_limit=0.2, rotate_limit=30, p=0.5,
-                       border_mode=cv2.BORDER_REFLECT),
-    A.ColorJitter(brightness=0.07, contrast=0.07, saturation=0.1, hue=0.1, always_apply=False, p=0.3),
-    A.RGBShift()
-])
+       A.ImageCompression(quality_lower=60, quality_upper=100, p=0.5),
+       A.GaussNoise(p=0.1),
+       A.GaussianBlur(blur_limit=3, p=0.05),
+       A.RandomCrop(width=128, height=128, p=1.0),
+       A.HorizontalFlip(),
+       A.PadIfNeeded(min_height=64, min_width=64, border_mode=cv2.BORDER_CONSTANT),
+       A.OneOf([A.RandomBrightnessContrast(), A.FancyPCA(), A.HueSaturationValue()], p=0.7),
+       A.RGBShift(),
+       A.ShiftScaleRotate(shift_limit=0.1, scale_limit=0.2, rotate_limit=10, border_mode=cv2.BORDER_CONSTANT, p=0.5),
+   ])

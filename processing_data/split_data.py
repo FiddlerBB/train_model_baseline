@@ -79,5 +79,34 @@ def data_info_csv(path):
 
     return
 
-data_info_csv(FOLDERS_PATH)
+KAGGLE_IMAGE_PATH = 'data/data_kaggle/*.jpg'
+KAGGLE_LABEL_PATH = 'data/data_kaggle/*.txt'
 
+def processing_kaggle_data(image_path, label_path):
+    images_id = []
+    images_path = []
+    labels_id = []
+    labels_path = []
+
+    for file in glob(image_path):
+        file_basename = os.path.basename(file)
+        label = 1 if file_basename[0:1] == 'l' else 0
+        label = file_basename.split('_')[0]
+        image_final_path = KAGGLE_IMAGE_PATH[:-5] + file_basename
+        images_id.append(file_basename)
+        images_path.append(image_final_path)
+        labels_id.append(label)
+
+    for txt_file in glob(label_path):
+        label_final_path = KAGGLE_LABEL_PATH[:-5]+ os.path.basename(txt_file)
+        labels_path.append(label_final_path)
+
+    dict = {
+        'image_id': images_id, 'image_path': images_path, 'label_path': labels_path, 'labels': labels_id
+    }
+
+
+    df = pd.DataFrame(dict)
+    df.to_csv('processing_data/data_kaggle.csv', index=False)
+
+processing_kaggle_data(KAGGLE_IMAGE_PATH, KAGGLE_LABEL_PATH)

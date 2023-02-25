@@ -10,7 +10,7 @@ MODEL_PATH = r'processing_data\face_detection\det_10g.onnx'
 detector = SCRFD(MODEL_PATH)
 detector.prepare(0)
 
-image_path = r'D:\study\Projects\train_model_baseline\testing\istockphoto-155137500-612x612.jpg'
+# image_path = r'D:\study\Projects\train_model_baseline\testing\istockphoto-155137500-612x612.jpg'
 
 async def extract_face(image):
     # image = cv2.imread(img_path)[:,:,::-1]
@@ -41,16 +41,17 @@ async def croping_face(image_path, output_path):
 
 
 async def main():
-    df = pd.read_csv('processing_data/data.csv')
+    df = pd.read_csv('processing_data/data_kaggle.csv')
     # df = df[:10]
     tasks = []
-    for idx, row in df.iterrows():
-        image_name = str(row['image_id']) + '.png'
+    for _, row in df.iterrows():
+        # image_name = str(row['image_id']) + '.png'
         image_path = row['image_path']
-        prepared_data_path = os.path.join('data/data_face_224', image_name)
-
-        task = asyncio.create_task(croping_face(image_path, prepared_data_path))
-        tasks.append(task)
+        prepared_data_path = os.path.join('data/data__kaggle_face_224', row['image_id'])
+        if not os.path.exists(prepared_data_path):
+            task = asyncio.create_task(croping_face(image_path, prepared_data_path))
+            tasks.append(task)
+        
 
     await asyncio.gather(*tasks)
 

@@ -2,3 +2,5 @@
 data/
 *.h5
 *.hdf5
+/logs
+new_data/

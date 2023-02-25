@@ -24,24 +24,19 @@ checkpoint_filepath = "spoof_face_classification.hdf5"
 config = tf.compat.v1.ConfigProto()
 config.gpu_options.allow_growth = True
 sess = tf.compat.v1.Session(config=config)
-CSV_PATH = r'D:\study\Projects\train_model_baseline\processing_data\filtered_clean.csv'
+CSV_PATH = r'processing_data\shuffled.csv'
 
 
 def load_data(db, val_split=0.2):
     if db == "train":
         data = pd.read_csv(CSV_PATH)
         # data.sort_values('labels', ascending=False)
-        data = data[:200]
-        # img_path = data['paths'].values + '/' + data['name_label'].values + '/' + data['img_name'].values
-        # img_path = [dir + str(i) + '.png' for i in data['image_id']]
-        img_path = [r'{}'.format(i) for i in data['cleaned_image_path']]
-        print(img_path)
-        # img_path = data['cleaned_image_path'].values
-        # img_path = dir + str(data['image_id']) + '.png'
-        label = data['labels'].values
-        # label = np.array(label, dtype='uint8')
+        data = data[:10000]
+        img_path = data['path'].values
+        label = data['liveness_score'].values
+        label = np.array(label, dtype='uint8')
         X_train, X_test, y_train, y_test = train_test_split(
-            img_path, label, test_size=0.1, random_state=42)
+            img_path, label, test_size=val_split, random_state=42)
         if val_split > 0:
 
             train_data = FaceAntiSpoofDataGenerator(X_train, y_train, no_classes=2, batch_size=BATCH_SIZE, img_size=(
@@ -52,7 +47,7 @@ def load_data(db, val_split=0.2):
             return train_data, val_data
 
 
-def trainer(train_generator, val_generator, debug=False):
+def trainer(train_generator, val_generator):
 
     vgg_model = anti_spoof_face()
     print(vgg_model.count_params(), vgg_model.inputs, vgg_model.outputs)
@@ -63,13 +58,13 @@ def trainer(train_generator, val_generator, debug=False):
         verbose=1,
         save_best_only=True,
         save_weights_only=True,
-        monitor='val_accuracy',
+        monitor='val_loss',
         mode='min')
 
     early = callbacks.EarlyStopping(
-        monitor="val_accuracy", mode="max", patience=10, verbose=1)
+        monitor="val_loss", mode="min", patience=5, verbose=1)
     redonplat = callbacks.ReduceLROnPlateau(
-        monitor="val_accuracy", factor=0.1, mode="max", patience=6, verbose=1
+        monitor="val_loss", factor=0.1, mode="min", patience=3, verbose=1
     )
     csv_logger = callbacks.CSVLogger(
         os.path.join(LOG, 'anti_spoof{}_{}.csv'.format(
@@ -86,7 +81,7 @@ def trainer(train_generator, val_generator, debug=False):
     ]
 
     optim = optimizers.Adam(learning_rate=LR)
-    vgg_model.compile(loss='categorical_crossentropy', optimizer=optim,
+    vgg_model.compile(loss='binary_crossentropy', optimizer=optim,
                       metrics='accuracy')
 
     history = vgg_model.fit(
@@ -114,9 +109,9 @@ def trainer(train_generator, val_generator, debug=False):
     with open(os.path.join(MODELS, "anti_spoof.json"), "w") as f:
         f.write(vgg_model.to_json())
 
-    return history, debug
+    return history
 
 
 if __name__ == '__main__':
     train_data, val_data = load_data("train", val_split=0.1)
-    trainer(train_generator=train_data, val_generator=val_data, debug=True)
+    trainer(train_generator=train_data, val_generator=val_data)

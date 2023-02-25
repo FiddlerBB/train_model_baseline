@@ -1,5 +1,5 @@
 import numpy as np
-from face_detection.ScrFd.scrfd import SCRFD
+from processing_data.face_detection.ScrFd.scrfd import SCRFD
 import cv2
 import pandas as pd
 import os
@@ -35,16 +35,16 @@ def croping_face(image_path,output_path):
                 pass
 
 
-df = pd.read_csv('data.csv')
+# df = pd.read_csv('data.csv')
 
 
-for idx, row in df.iterrows():
-    print(row['image_id'])
-    image_name = str(row['image_id']) + '.png'
-    image_path = row['image_path']
-    prepared_data_path = os.path.join('Data/data_face', image_name)
+# for idx, row in df.iterrows():
+#     print(row['image_id'])
+#     image_name = str(row['image_id']) + '.png'
+#     image_path = row['image_path']
+#     prepared_data_path = os.path.join('Data/data_face', image_name)
     
-    croping_face(image_path, prepared_data_path)
+#     croping_face(image_path, prepared_data_path)
 
 # croping_face(image_path, 'testing/tesing.png')
 
