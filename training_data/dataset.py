@@ -79,6 +79,8 @@ class FaceAntiSpoofDataGenerator(tensorflow.keras.utils.Sequence):
             y.append(label)
         # lb = LabelEncoder()
         # y = lb.fit_transform(y)
+        y = np.array(y)
+
         y = to_categorical(y, num_classes=self.no_classes)
         # y = np.array(y)
         return X, y

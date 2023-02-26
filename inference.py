@@ -13,11 +13,11 @@ model.load_weights(model_path)
 # model = anti_spoof_face()
 # model.load_weights(model_path)
 # model = load_model(model_path)
-image_path = r'D:\study\Projects\train_model_baseline\testing\image_F2.jpg'
+image_path = r'D:\study\Projects\train_model_baseline\testing\images.jpeg'
 
 
 def pre_processing(image):
-    # image = cv2.imread(image)[:,:,::-1]
+    image = cv2.imread(image)[:,:,::-1]
     face = []
     x_total = []
     y_total = []

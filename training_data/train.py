@@ -24,14 +24,14 @@ checkpoint_filepath = "spoof_face_classification.hdf5"
 config = tf.compat.v1.ConfigProto()
 config.gpu_options.allow_growth = True
 sess = tf.compat.v1.Session(config=config)
-CSV_PATH = r'processing_data\shuffled.csv'
+CSV_PATH = r'processing_data\train_data.csv'
 
 
 def load_data(db, val_split=0.2):
     if db == "train":
         data = pd.read_csv(CSV_PATH)
         # data.sort_values('labels', ascending=False)
-        data = data[:10000]
+        # data = data[:10000]
         img_path = data['path'].values
         label = data['liveness_score'].values
         label = np.array(label, dtype='uint8')
