@@ -16,6 +16,7 @@ from tensorflow.keras import optimizers
 from tensorflow.keras import callbacks
 import numpy as np
 from dataset import FaceAntiSpoofDataGenerator
+from tensorflow.keras.metrics import Precision, Recall
 from sklearn.model_selection import train_test_split
 from aug import AUGMENTATION_TRAIN
 from model import anti_spoof_face
@@ -24,17 +25,18 @@ checkpoint_filepath = "spoof_face_classification.hdf5"
 config = tf.compat.v1.ConfigProto()
 config.gpu_options.allow_growth = True
 sess = tf.compat.v1.Session(config=config)
-CSV_PATH = r'processing_data\train_data.csv'
+CSV_PATH = r'processing_data\filtered_clean_kaggle.csv'
 
+metrics = ['accuracy', Precision(), Recall()]
 
 def load_data(db, val_split=0.2):
     if db == "train":
         data = pd.read_csv(CSV_PATH)
         # data.sort_values('labels', ascending=False)
         # data = data[:10000]
-        img_path = data['path'].values
-        label = data['liveness_score'].values
-        label = np.array(label, dtype='uint8')
+        img_path = data['cleaned_image_path'].values
+        label = data['labels'].values
+        # label = np.array(label, dtype='uint8')
         X_train, X_test, y_train, y_test = train_test_split(
             img_path, label, test_size=val_split, random_state=42)
         if val_split > 0:
@@ -82,7 +84,7 @@ def trainer(train_generator, val_generator):
 
     optim = optimizers.Adam(learning_rate=LR)
     vgg_model.compile(loss='binary_crossentropy', optimizer=optim,
-                      metrics='accuracy')
+                      metrics=metrics)
 
     history = vgg_model.fit(
         train_generator,

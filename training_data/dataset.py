@@ -70,17 +70,17 @@ class FaceAntiSpoofDataGenerator(tensorflow.keras.utils.Sequence):
                 continue
             img = cv2.resize(img, self.img_size)
             # img = preprocess_input(img)
-            if self.augment is not None:
+            if self.augment:
                 aug = self.augment(image=img)
                 img = aug["image"]
             img = img.astype('float32')
 
             X = np.vstack((X, np.expand_dims(img, axis=0)))
             y.append(label)
-        # lb = LabelEncoder()
-        # y = lb.fit_transform(y)
-        y = np.array(y)
+        lb = LabelEncoder()
+        y = lb.fit_transform(y)
+        # y = np.array(y)
 
         y = to_categorical(y, num_classes=self.no_classes)
-        # y = np.array(y)
+        y = np.array(y)
         return X, y

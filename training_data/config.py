@@ -1,8 +1,8 @@
 MODELS = './models'
 CPS = './checkpoint'
 EPOCHS = 100
-BATCH_SIZE = 16
-IMG_SIZE = 128
+BATCH_SIZE = 8
+IMG_SIZE = 224
 LR = 1e-3
 LOG = './logs'
 NO_CLASSES = 2

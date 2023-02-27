@@ -18,9 +18,11 @@ csv_path = r'D:\study\Projects\train_model_baseline\processing_data\train_data.c
 df = pd.read_csv(csv_path)
 live = df[df['liveness_score'] == 1][:5000]
 spoof = df[df['liveness_score'] == 0][:5000]
-
 result = pd.concat([live, spoof])
 result.sample(frac=1)
 result= result.sample(frac=1)
+gb = result.groupby('liveness_score').count()
+print(gb)
 
-df.to_csv('processing_data/shuffled.csv', index=False)
+
+result.to_csv('processing_data/shuffled.csv', index=False)
